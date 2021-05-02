@@ -68,7 +68,11 @@ class Calculator extends Component {
     if (innerText === ".") {
       num1 = num1 ? num1 : "0";
       if (stateInput.charAt(stateInput.length - 1) === ".") return;
+      if (num1.includes(".")&&!num2) return;
+      if(num2.includes("."))return;
+      if (operator && !num2) return;
     }
+
     if (innerText === "=") {
       if (!num2) {
         input = num1 ? num1 : "0";
@@ -115,12 +119,9 @@ class Calculator extends Component {
         num2 += innerText;
         input = num2;
       } else {
-        if (input === "0" && innerText === "0") {
-          num1=input;
-        } else {
-          num1 += innerText;
-          input = num1;
-        }
+        if(num1==="0"&&innerText==="0")return
+        num1 += innerText;
+        input = num1;
       }
     }
 
