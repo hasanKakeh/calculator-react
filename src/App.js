@@ -21,7 +21,7 @@ class Calculator extends Component {
           { char: "*", id: "multiply" },
         ],
         [
-          { char: "7", id: "multiply" },
+          { char: "7", id: "seven" },
           { char: "8", id: "eight" },
           { char: "9", id: "nine" },
           { char: "-", id: "subtract" },
@@ -49,7 +49,7 @@ class Calculator extends Component {
   }
 
   handleClick(e) {
-  // console.log(evaluate("2.1+23"));
+    // console.log(evaluate("2.1+23"));
     var { innerText } = e.currentTarget;
     var { operator, num1, num2, stateInput } = this.state;
     var input;
@@ -64,6 +64,7 @@ class Calculator extends Component {
       });
       return;
     }
+
     if (innerText === ".") {
       num1 = num1 ? num1 : "0";
       if (stateInput.charAt(stateInput.length - 1) === ".") return;
@@ -114,8 +115,12 @@ class Calculator extends Component {
         num2 += innerText;
         input = num2;
       } else {
-        num1 += innerText;
-        input = num1;
+        if (input === "0" && innerText === "0") {
+          num1=input;
+        } else {
+          num1 += innerText;
+          input = num1;
+        }
       }
     }
 
@@ -140,7 +145,11 @@ class Calculator extends Component {
             <p className="text-end text-break m-2" style={{ textAlign: "end" }}>
               {this.state.stateInput}
             </p>
-            <h3 id="display" className="text-end  m-2" style={{ textAlign: "end" }}>
+            <h3
+              id="display"
+              className="text-end  m-2"
+              style={{ textAlign: "end" }}
+            >
               {this.state.input}
             </h3>
           </div>
@@ -151,7 +160,11 @@ class Calculator extends Component {
             {buttons.map((r, i) => {
               if (i === 2) {
                 return (
-                  <div key={i} className="row mr-0 ml-0" style={{ width: "100%" }}>
+                  <div
+                    key={i}
+                    className="row mr-0 ml-0"
+                    style={{ width: "100%" }}
+                  >
                     <div className="col-9 pr-0 pl-0">
                       {r.slice(0, 2).map((row) => {
                         return row.map((c, i) => {
