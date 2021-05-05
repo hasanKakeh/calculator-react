@@ -2,14 +2,14 @@ import React from "react";
 import "../App.css";
 
 const getBackgroundColor = (char) => {
-  return char === "C" ? "#ff3077" : char === "=" ? "#03b1ff" : "#0c2538";
+  return char === "C" ? "#ff3077" : char === "=" ? "#03b1ff" :char==="+"? "#0c2538":"#0c2538";
 };
 const Button = ({ char, ...rest }) => {
   return (
     <div
       /*text-center*/
       style={{
-        height: "50px",
+        height: char!=="+"?"50px":"",
         backgroundColor: getBackgroundColor(char),
         JustifyContent: "center",
         border: "none !important",

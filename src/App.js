@@ -59,6 +59,19 @@ class Calculator extends Component {
       operator: "",
     });
   }
+  onKeyPress(e) {
+      var key = e.key;
+    if ((e.keyCode=== 13)) key = "=";
+    const item = document.getElementById(key);
+
+    if (item) item.click();
+  }
+  componentDidMount() {
+    document.addEventListener("keydown", this.onKeyPress, false);
+  }
+  componentDidMount() {
+    document.addEventListener("keydown", (e) => this.onKeyPress(e), false);
+  }
 
   handleClick(e) {
     // console.log(evaluate("2.1+23"));
@@ -114,12 +127,13 @@ class Calculator extends Component {
         num1 = input;
       }
     } else {
-     // if (num1.length > 12 || num2.length > 12) return;
+      // if (num1.length > 12 || num2.length > 12) return;
       if (operator) {
-        if(num2.length > 12) return;
+        if (num2.length > 12) return;
         num2 += innerText;
         input = num2;
-      } else {if (num1.length > 12 )return;
+      } else {
+        if (num1.length > 12) return;
         if (num1 === "0" && innerText === "0") return;
         num1 += innerText;
         input = num1;

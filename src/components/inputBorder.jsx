@@ -1,11 +1,12 @@
 import Button from "./button";
 
-const InputBorder = ({buttons,onClick}) => {
+const InputBorder = ({ buttons, onClick }) => {
   return (
     <div
       className="row rounded border "
       style={{ width: "100%", marginLeft: 0, marginRight: 0 }}
     >
+    
       {buttons.map((r, i) => {
         if (i === 2) {
           return (
@@ -16,7 +17,7 @@ const InputBorder = ({buttons,onClick}) => {
                     return (
                       <Button
                         key={i}
-                        id={c.id}
+                        id={c.char}
                         onClick={onClick}
                         value={c.char}
                         className=" btn hover align-middle  col-4  "
@@ -27,15 +28,10 @@ const InputBorder = ({buttons,onClick}) => {
                 })}
               </div>
               <Button
-                id={r[2].id}
+                id={r[2].char}
                 className=" btn hover  float-right  col-3"
                 onClick={onClick}
                 value={r[2].char}
-                style={{
-                  backgroundColor: "#0c2538",
-                  JustifyContent: "center",
-                  color: "#fff",
-                }}
                 char={r[2].char}
               ></Button>
             </div>
@@ -45,7 +41,7 @@ const InputBorder = ({buttons,onClick}) => {
           return (
             <Button
               key={i}
-              id={c.id}
+              id={c.char}
               onClick={onClick}
               value={c.char}
               className={
