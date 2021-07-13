@@ -25,6 +25,8 @@ usese react hooks (function) and old style of react (class)
 
 you can use key or press on the button
 
+
+#use `npm install` for install package
 # Libraries
 
 ### `bootStrap` 
