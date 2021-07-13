@@ -20,7 +20,9 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 # About it
 
 simpale react app
+
 usese react hooks (function) and old style of react (class)
+
 you can use key or press on the button
 
 # Libraries
