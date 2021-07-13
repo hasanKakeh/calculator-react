@@ -1,0 +1,12 @@
+.event:hover {
+  cursor: pointer;
+  border: 2px solid #74ff3b !important;
+
+  /*  */
+}
+.event:active {
+  background-color: #74ff3b !important ;
+}
+.event:focus {
+  box-shadow: none !important;
+}

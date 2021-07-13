@@ -1,11 +1,9 @@
-import "./App.css";
 import React, { Component } from "react";
-import Button from "./components/button";
 import "bootstrap/dist/css/bootstrap.css";
 import { evaluate } from "mathjs";
 import InputBorder from "./components/inputBorder";
 import Display from "./components/display";
-
+export const onClickContext = React.createContext();
 class Calculator extends Component {
   constructor(props) {
     super(props);
@@ -13,148 +11,136 @@ class Calculator extends Component {
     this.state = {
       num1: "",
       num2: "",
-      input: "0",
-      stackInput: "0",
+      input: "",
       operator: "",
-      buttons: [
-        [
-          { char: "C", id: "clear" },
-          { char: "/", id: "divide" },
-          { char: "*", id: "multiply" },
-        ],
-        [
-          { char: "7", id: "seven" },
-          { char: "8", id: "eight" },
-          { char: "9", id: "nine" },
-          { char: "-", id: "subtract" },
-        ],
-        [
-          [
-            { char: "4", id: "four" },
-            { char: "5", id: "five" },
-            { char: "6", id: "six" },
-          ],
-          [
-            { char: "1", id: "one" },
-            { char: "2", id: "two" },
-            { char: "3", id: "three" },
-          ],
-          { char: "+", id: "add" },
-        ],
-        [
-          { char: "0", id: "zero" },
-          { char: ".", id: "decimal" },
-          { char: "=", id: "equals" },
-        ],
-      ],
-      operators: ["+", "-", "*", "/"],
     };
   }
+  RemoveLastItems(text) {
+    return text.slice(0, -1);
+  }
   Clear() {
-    this.setState({
-      num1: "",
-      num2: "",
-      stackInput: "0",
-      input: "0",
-      operator: "",
-    });
+    const { num1, num2, operator, input } = this.state;
+    if (input) {
+      const updateInput = this.RemoveLastItems(input);
+      if (num2) {
+        this.setState({ input: updateInput, num2: this.RemoveLastItems(num2) });
+        return;
+      }
+      if (operator) {
+        this.setState({
+          input: updateInput,
+          operator: this.RemoveLastItems(operator),
+        });
+        return;
+      }
+      if (num1) {
+        this.setState({ input: updateInput, num1: this.RemoveLastItems(num1) });
+        return;
+      }
+    }
   }
   onKeyPress(e) {
-      var key = e.key;
-    if ((e.keyCode=== 13)) key = "=";
+    var key = e.key;
+    if (e.keyCode === 13) key = "=";
     const item = document.getElementById(key);
 
     if (item) item.click();
   }
-  componentDidMount() {
-    document.addEventListener("keydown", this.onKeyPress, false);
+  componentDidUnMount() {
+    document.removeEventListener("keydown", (e) => this.onKeyPress(e), false);
   }
   componentDidMount() {
     document.addEventListener("keydown", (e) => this.onKeyPress(e), false);
   }
+  // validate start with multi zero
+  fixStartwithMultiZero(number) {
+    if (number === "00") return "0";
+    return number;
+  }
 
-  handleClick(e) {
-    // console.log(evaluate("2.1+23"));
-    var { innerText } = e.currentTarget;
-    var { operator, operators, num1, num2, stackInput } = this.state;
-    var input;
-    // console.log(operator);
+  validateNumbers(text) {
+    // fix this 3132. to 3132.0 to get number
+    const toFixDotChar = "0";
+    const expresionNumber = /^(-|\+)?(\d+|(\d+\.?\d*))$/g;
+    // this don't effect on the result , just for check
+    return (text + toFixDotChar).match(expresionNumber) ? true : false;
+  }
+  validateOperators(text) {
+    const expresionOprations = /[-+*/]/g;
+    return text.match(expresionOprations) ? true : false;
+  }
+
+  handleButtonClick(e) {
+    const { innerText } = e.currentTarget;
+    var { num1, num2, operator, input } = this.state;
+    var temp = innerText;
+    //to remove last input
     if (innerText === "C") {
       this.Clear();
       return;
     }
-    if (innerText === ".") {
-      num1 = num1 ? num1 : "0";
-      //  if (stackInput.charAt(stackInput.length - 1) === ".") return;
-      if (num1.includes(".") && !num2) return;
-      if (num2.includes(".")) return;
-      if (operator && !num2) return;
-    }
-
-    if (innerText === "=") {
-      if (!num2) {
-        input = num1 ? num1 : "0";
-      } else {
-        input = evaluate(num1 + operator + num2);
-        num1 = input;
-      }
-      this.setState({
-        num1,
-        num2: "",
-        input,
-        stackInput: input,
-        operator: "",
-      });
+    // to get the result
+    if (innerText === "=" && num2) {
+      num1 = num1.endsWith(".") ? num1 + "0" : num1;
+      num2 = num2.endsWith(".") ? num2 + "0" : num2;
+      num1 = evaluate(num1 + operator + num2).toString();
+      operator = "";
+      num2 = "";
+      input = num1;
+      this.setState({ input, num1, operator, num2 });
       return;
     }
-    if (operators.includes(innerText)) {
-      if (num1) {
-        operator =
-          !operator || (operator && innerText !== "-")
-            ? innerText
-            : operator.length < 2
-            ? operator + innerText
-            : operator;
-        if (num2) {
-          num1 = evaluate(stackInput);
-          num2 = "";
-          operator = operator.length === 2 ? innerText : operator;
-        }
-        input = innerText;
-        console.log(input);
-      } else {
-        input = innerText === "+" || innerText === "-" ? innerText : "";
-        num1 = input;
+    //if the user input anther operator calcuate the result and but the result in num1
+    if (num1 && num2 && this.validateOperators(innerText)) {
+      num1 = evaluate(num1 + operator + num2).toString();
+      operator = innerText;
+      num2 = "";
+      input = num1 + operator;
+      this.setState({ input, num1, operator, num2 });
+      return;
+    }
+    //if the input isn't operator then check and but them in the num1 or num2
+    if (!operator) {
+      temp = num1 + temp;
+      if (this.validateNumbers(temp)) {
+        num1 = temp;
+        num1 = this.fixStartwithMultiZero(num1);
+        input = num1;
+        this.setState({ input, num1, operator, num2 });
+        return;
       }
     } else {
-      // if (num1.length > 12 || num2.length > 12) return;
-      if (operator) {
-        if (num2.length > 12) return;
-        num2 += innerText;
-        input = num2;
-      } else {
-        if (num1.length > 12) return;
-        if (num1 === "0" && innerText === "0") return;
-        num1 += innerText;
-        input = num1;
+      temp = num2 + temp;
+      if (this.validateNumbers(temp)) {
+        num2 = temp;
+        num2 = this.fixStartwithMultiZero(num2);
+        input += innerText;
+        this.setState({ input, num1, operator, num2 });
+        return;
       }
     }
-    stackInput = num1 + operator + num2;
-    console.log({ input, stackInput, operator, num1, num2 });
-    //const input = c.exec("5+");
-
-    this.setState({ input, stackInput, operator, num1, num2 });
+    //if the input is operator and num1 is here to validate start with operator
+    if (num1 && num1 !== "-" && this.validateOperators(innerText)) {
+      operator =
+        innerText === "-" && (operator === "/" || operator === "*")
+          ? operator + innerText
+          : innerText;
+      input = num1 + operator;
+      this.setState({ input, num1, operator, num2 });
+      return;
+    }
   }
   render() {
-    const { buttons, input, stackInput } = this.state;
     return (
       <div
         className="container  mt-5"
         style={{ width: "300px", height: "auto" }}
       >
-        <div className={"rounded border"}>
-          <Display input={input} stackInput={stackInput} />
-          <InputBorder buttons={buttons} onClick={(e) => this.handleClick(e)} />
+        <div className={" rounded border"}>
+          <Display input={this.state.input} />
+          <onClickContext.Provider value={(e) => this.handleButtonClick(e)}>
+            <InputBorder />
+          </onClickContext.Provider>
         </div>
       </div>
     );
