@@ -1,6 +1,7 @@
 
 
-![GitHub Logo](/images/calculate1.png)
+![GitHub Logo](/images/calculate1.png)    
+![GitHub Logo](/images/calculate2.png)
 
 
 # Getting Started with Create React App
