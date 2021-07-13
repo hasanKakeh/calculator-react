@@ -42,6 +42,7 @@ class Calculator extends Component {
   onKeyPress(e) {
     var key = e.key;
     if (e.keyCode === 13) key = "=";
+    if (e.keyCode === 8) key = "C";
     const item = document.getElementById(key);
 
     if (item) item.click();
